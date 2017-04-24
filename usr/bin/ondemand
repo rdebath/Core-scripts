@@ -32,7 +32,7 @@ LOCALDIR="$HOME"/.local/share/applications
 
 [ -d /mnt/test ] || sudo /bin/mkdir -p /mnt/test
 
-while getopts clter OPTION
+while getopts clterh OPTION
 do
 	case ${OPTION} in
 		c) CURRITEMS=1 ;;
@@ -40,6 +40,7 @@ do
 		t) TCZ=1; TYPE="tcz" ;;
 		e) EXECITEM=1 ;;
 		r) REMOVEITEM=1 ;;
+		h) ;;
 		*) exit 1 ;;
 	esac
 done
@@ -89,6 +90,17 @@ if  [ -n "$1" ]; then
 		exit 1
 	fi
 else
+	cat <<-!
+	Usage:
+	    $(basename $0) package.tcz
+	    $(basename $0) <option> [Args]
+	Options:
+	    <none>  Add package to ondemand list
+	    -c	    List current items
+	    -l	    List all items
+	    -r	    Remove item from ondemand list
+	    -e	    Load and execute package with arguments.
+	!
 	exit 1
 fi
 
