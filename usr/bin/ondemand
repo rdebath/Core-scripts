@@ -144,5 +144,6 @@ chmod +x "$FILE"
 [ $(which ${DESKTOP}_ondemand) ] && ${DESKTOP}_ondemand "$APPNAME"
 
 if [ $(which ${DESKTOP}_restart) ]; then
-	${DESKTOP}_restart
+	${DESKTOP}_restart >/dev/null 2>&1
 fi
+exit 0
