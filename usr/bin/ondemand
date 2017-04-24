@@ -101,11 +101,22 @@ if [ "$EXECITEM" ]; then
 	fi
 	INSTALLED=/usr/local/tce.installed
 	if [ ! -e "$INSTALLED"/"$APPNAME" ]; then
-		shift 1 && ${COMMAND} "$FROMWHERE""$APPNAME"."$TYPE" && launchApp "$APPNAME" "$@"
-	else
-		shift 1 && launchApp "$APPNAME" "$@"
+		${COMMAND} "$FROMWHERE""$APPNAME"."$TYPE" || exit
 	fi
-	exit 0
+	shift 1
+	FOUNDDIR="$(IFS=:; set -f -- $PATH
+	    for P
+	    do [ -x "$P"/"$APPNAME" ] && {
+		echo "$P"
+		break;
+	    }
+	    done
+	)"
+	case "$FOUNDDIR" in
+	""|*/ondemand* ) launchApp "$APPNAME" "$@" ;;
+	* ) exec "$FOUNDDIR"/"$APPNAME" "$@" ;;
+	esac
+	exit
 fi
 
 # Arrive here if no flags were specified.
@@ -114,7 +125,7 @@ fi
 [ -d "$TCEDIR"/ondemand ] || mkdir -p "$TCEDIR"/ondemand
 FILE="$TCEDIR"/ondemand/"$APPNAME"
 echo '#!/bin/sh' > "$FILE"
-echo 'ondemand -e '"$EXTN"' "$@"' >> "$FILE"
+echo 'exec ondemand -e '"$EXTN"' "$@"' >> "$FILE"
 chmod +x "$FILE"
 
 # Optional as flwm does not need a make_ondemand.
