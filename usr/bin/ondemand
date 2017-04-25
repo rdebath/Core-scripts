@@ -116,14 +116,17 @@ if [ "$EXECITEM" ]; then
 		${COMMAND} "$FROMWHERE""$APPNAME"."$TYPE" || exit
 	fi
 	shift 1
-	FOUNDDIR="$(IFS=:; set -f -- $PATH
-	    for P
-	    do [ -x "$P"/"$APPNAME" ] && {
-		echo "$P"
-		break;
-	    }
-	    done
-	)"
+	if [ -t 0 ] ;then
+	    FOUNDDIR="$(IFS=:; set -f -- $PATH
+		for P
+		do [ -x "$P"/"$APPNAME" ] && {
+		    echo "$P"
+		    break;
+		}
+		done
+	    )"
+	else FOUNDDIR=
+	fi
 	case "$FOUNDDIR" in
 	""|*/ondemand* ) launchApp "$APPNAME" "$@" ;;
 	* ) exec "$FOUNDDIR"/"$APPNAME" "$@" ;;
